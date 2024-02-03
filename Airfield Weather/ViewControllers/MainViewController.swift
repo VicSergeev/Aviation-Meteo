@@ -7,13 +7,38 @@
 
 import UIKit
 
+enum Link {
+    
+    case URRP
+    
+    var url: URL {
+        let currentDate = getDate()
+        let urlString = "https://aviationweather.gov/api/data/metar?ids=\(self)&format=json&taf=false&hours=1&date=\(currentDate)"
+        return URL(string: urlString)!
+    }
+    
+    private func getDate() -> String {
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        
+        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
+        
+        let formattedDate = dateFormatter.string(from: currentDate)
+        
+        return formattedDate + "Z"
+    }
+}
+
 final class MainViewController: UITableViewController {
-    private var airfields = Airfield.getAirfields()
+    private let networkManager = NetworkManager.shared
     private let cellIcon = UIImage(named: "icon")
+    
+    private var airfields = Airfield.getAirfields()
 
     override func viewDidLoad() {
         tableView.rowHeight = 100
-        
+        fetchForecast()
     }
 
 
@@ -33,8 +58,14 @@ extension MainViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cityCell", for: indexPath)
-        guard let cell = cell as? CityCell else { return UITableViewCell() }
         let airfield = airfields[indexPath.row]
+        
+        var content = cell.defaultContentConfiguration()
+        content.text = airfield.name
+        content.secondaryText = airfield.icaoCode
+        content.image = cellIcon
+        
+        cell.contentConfiguration = content
         
         return cell
     }
@@ -42,26 +73,15 @@ extension MainViewController {
 }
 
 // MARK: - Networking
-extension MainViewController {
-    func fetchForecast(with icaoCode: String) {
-        guard let link = Link(rawValue: icaoCode)?.url else {
-            print("Invalid ICAO code")
-            return
-        } // creating link
-        
-        URLSession.shared.dataTask(with: link) { data, _, error in
-            guard let data else {
-                print(error?.localizedDescription ?? "No error description")
-                return
+private extension MainViewController {
+    func fetchForecast() {
+        networkManager.fetchForecast(from: Link.URRP.url) { result in
+            switch result {
+            case .success(let metar):
+                print(metar)
+            case .failure(let error):
+                print(error)
             }
-            
-            let decoder = JSONDecoder()
-            
-            do {
-                let forecast = try JSONDecoder().decode([Metar].self, from: data)
-            } catch {
-                print(print("Error: \(error.localizedDescription)"))
-            }
-        }.resume()
-    } // METHOD
+        }
+    }
 }
