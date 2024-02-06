@@ -10,6 +10,7 @@ import UIKit
 final class MainViewController: UIViewController {
     
     private var metars: [Metar] = []
+    private let networkManager = NetworkManager.shared
     
     @IBOutlet var icaoCodeLabel: UILabel!
     @IBOutlet var tempLabel: UILabel!
@@ -23,49 +24,34 @@ final class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchDataFromAPI()
+        fetchMetar()
     }
-
-}
-
-// MARK: - Networking
-extension MainViewController {
     
-    func fetchDataFromAPI() {
-        
+    private func fetchMetar() {
         let currentDate = Date()
         let dateFormatter = DateFormatter()
         dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
         dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
+        let link = URL(string: "https://aviationweather.gov/api/data/metar?ids=URRP&format=json&taf=false&hours=1&date=\(dateFormatter.string(from: currentDate))Z")!
         
-        guard let url = URL(string: "https://aviationweather.gov/api/data/metar?ids=URRP&format=json&taf=false&hours=1&date=\(dateFormatter.string(from: currentDate))Z") else {
-            print("Invalid link")
-            return
-        }
-//        Link.URRP.url
-        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
-            guard let self else { return }
-            guard let data else {
-                print(error ?? "No error description")
-                return
-            }
-            do {
-                metars = try JSONDecoder().decode([Metar].self, from: data)
-                DispatchQueue.main.async { [self] in
-                    for metar in self.metars {
-                        self.tempLabel.text = String(metar.temp) + " C'"
-                        self.dewPointLabel.text = String(metar.dewp) + " C'"
-                        self.icaoCodeLabel.text = metar.icaoId
-                        self.cityNameLabel.text = metar.name
-                        self.visibilityLabel.text = String(metar.visib) + " km"
-                        self.windSpeedLabel.text = String(metar.wspd) + " kn"
-                        self.metarRawLabel.text = metar.rawOb
-                        self.timeUpdatedLabel.text = metar.reportTime + " UTC"
-                    }
+        networkManager.fetchMetar(from: link) { [unowned self] result in
+            switch result {
+            case .success(let metars):
+                self.metars = metars
+                for metar in metars {
+                    cityNameLabel.text = metar.airportName
+                    icaoCodeLabel.text = metar.icaoCode
+                    tempLabel.text = String(metar.temperature) + " °C"
+                    dewPointLabel.text = String(metar.dewPoint) + " °C"
+                    visibilityLabel.text = metar.visibility + " km"
+                    windSpeedLabel.text = String(metar.windSpeed) + " kn"
+                    metarRawLabel.text = metar.rawMetarData
+                    timeUpdatedLabel.text = metar.reportTime + "UTC"
                 }
-            } catch {
-                print("Error decoding JSON: \(error)")
+            case .failure(let error):
+                print(error)
             }
-        }.resume()
+        }
     }
+
 }
