@@ -29,6 +29,7 @@ final class MainViewController: UIViewController {
     @IBOutlet var windSpeedLabel: UILabel!
     @IBOutlet var metarRawLabel: UILabel!
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         fetchDataFromAPI()
