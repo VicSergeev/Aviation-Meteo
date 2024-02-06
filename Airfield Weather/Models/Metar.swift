@@ -14,6 +14,7 @@ struct Metar: Decodable {
     let dewp: Int
     let temp: Int
     let rawOb: String
-    let visib: Double
+    let visib: String
     let wspd: Int
+    let reportTime: String
 }

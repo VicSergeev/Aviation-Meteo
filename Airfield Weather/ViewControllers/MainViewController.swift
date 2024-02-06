@@ -12,7 +12,14 @@ enum Link {
     case URRP
     
     var url: URL {
-        let urlString = "https://aviationweather.gov/api/data/metar?ids=URRP&format=json&taf=false&hours=1&date=20240201_195943Z"
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
+        let formattedDate = dateFormatter.string(from: currentDate)
+        
+//        let urlString = "https://aviationweather.gov/api/data/metar?ids=URRP&format=json&taf=false&hours=1&date=20240201_195943Z"
+        let urlString = "https://aviationweather.gov/api/data/metar?ids=URRP&format=json&taf=false&hours=1&date=\(formattedDate)Z"
         return URL(string: urlString)!
     }
 }
@@ -28,6 +35,7 @@ final class MainViewController: UIViewController {
     @IBOutlet var visibilityLabel: UILabel!
     @IBOutlet var windSpeedLabel: UILabel!
     @IBOutlet var metarRawLabel: UILabel!
+    @IBOutlet var timeUpdatedLabel: UILabel!
     
     
     override func viewDidLoad() {
@@ -41,7 +49,18 @@ final class MainViewController: UIViewController {
 extension MainViewController {
     
     func fetchDataFromAPI() {
-        URLSession.shared.dataTask(with: Link.URRP.url) { [weak self] data, _, error in
+        
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
+        
+        guard let url = URL(string: "https://aviationweather.gov/api/data/metar?ids=URRP&format=json&taf=false&hours=1&date=\(dateFormatter.string(from: currentDate))Z") else {
+            print("Invalid link")
+            return
+        }
+//        Link.URRP.url
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
             guard let self else { return }
             guard let data else {
                 print(error ?? "No error description")
@@ -51,13 +70,14 @@ extension MainViewController {
                 metars = try JSONDecoder().decode([Metar].self, from: data)
                 DispatchQueue.main.async { [self] in
                     for metar in self.metars {
-                        self.tempLabel.text = String(metar.temp)
-                        self.dewPointLabel.text = String(metar.dewp)
+                        self.tempLabel.text = String(metar.temp) + " C'"
+                        self.dewPointLabel.text = String(metar.dewp) + " C'"
                         self.icaoCodeLabel.text = metar.icaoId
                         self.cityNameLabel.text = metar.name
-                        self.visibilityLabel.text = String(metar.visib)
-                        self.windSpeedLabel.text = String(metar.wspd)
+                        self.visibilityLabel.text = String(metar.visib) + " km"
+                        self.windSpeedLabel.text = String(metar.wspd) + " kn"
                         self.metarRawLabel.text = metar.rawOb
+                        self.timeUpdatedLabel.text = metar.reportTime + " UTC"
                     }
                 }
             } catch {
