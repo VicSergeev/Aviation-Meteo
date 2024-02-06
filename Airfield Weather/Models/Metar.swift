@@ -11,6 +11,7 @@ import Foundation
 struct Clouds: Codable {
     let cover: String?
     let base: Int?
+    
 }
 
 struct Metar: Codable {
