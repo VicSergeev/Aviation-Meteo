@@ -8,16 +8,12 @@
 // MARK: - Gathering data
 import Foundation
 
-struct Clouds: Codable {
-    let cover: String?
-    let base: Int?
-    
-}
-
-struct Metar: Codable {
+struct Metar: Decodable {
     let icaoId: String
-    let reportTime: String
-    let rawOb: String
     let name: String
-    let clouds: [Clouds]
+    let dewp: Int
+    let temp: Int
+    let rawOb: String
+    let visib: Double
+    let wspd: Int
 }
