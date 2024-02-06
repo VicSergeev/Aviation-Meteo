@@ -7,23 +7,6 @@
 
 import UIKit
 
-enum Link {
-    
-    case URRP
-    
-    var url: URL {
-        let currentDate = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
-        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
-        let formattedDate = dateFormatter.string(from: currentDate)
-        
-//        let urlString = "https://aviationweather.gov/api/data/metar?ids=URRP&format=json&taf=false&hours=1&date=20240201_195943Z"
-        let urlString = "https://aviationweather.gov/api/data/metar?ids=URRP&format=json&taf=false&hours=1&date=\(formattedDate)Z"
-        return URL(string: urlString)!
-    }
-}
-
 final class MainViewController: UIViewController {
     
     private var metars: [Metar] = []
