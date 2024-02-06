@@ -22,6 +22,7 @@ final class MainViewController: UIViewController {
     @IBOutlet var timeUpdatedLabel: UILabel!
     
     // TODO: сделать reload metar data
+    // TODO: сделать ромашку
     override func viewDidLoad() {
         super.viewDidLoad()
         fetchMetar()
