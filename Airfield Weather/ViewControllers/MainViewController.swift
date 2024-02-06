@@ -21,12 +21,13 @@ final class MainViewController: UIViewController {
     @IBOutlet var metarRawLabel: UILabel!
     @IBOutlet var timeUpdatedLabel: UILabel!
     
-    
+    // TODO: сделать reload metar data
     override func viewDidLoad() {
         super.viewDidLoad()
         fetchMetar()
     }
     
+    // TODO: упростить получение url с актуальной датой запроса
     private func fetchMetar() {
         let currentDate = Date()
         let dateFormatter = DateFormatter()
