@@ -339,7 +339,7 @@
 				DEVELOPMENT_TEAM = MF7QC2JX3N;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Airfield Weather/App/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Aviation Meteo";
+				INFOPLIST_KEY_CFBundleDisplayName = "Platov Meteo";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.weather";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -373,7 +373,7 @@
 				DEVELOPMENT_TEAM = MF7QC2JX3N;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Airfield Weather/App/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Aviation Meteo";
+				INFOPLIST_KEY_CFBundleDisplayName = "Platov Meteo";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.weather";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
