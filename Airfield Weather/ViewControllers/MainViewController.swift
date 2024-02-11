@@ -45,10 +45,15 @@ final class MainViewController: UIViewController {
                     icaoCodeLabel.text = metar.icaoCode
                     tempLabel.text = String(metar.temperature) + " °C"
                     dewPointLabel.text = String(metar.dewPoint) + " °C"
-                    visibilityLabel.text = metar.visibility + " km"
+                    if metar.visibility == "" {
+                        visibilityLabel.text = "no visibility data available"
+                    } else {
+                        visibilityLabel.text = metar.visibility + " km"
+                    }
                     windSpeedLabel.text = String(metar.windSpeed) + " kn"
                     metarRawLabel.text = metar.rawMetarData
                     timeUpdatedLabel.text = metar.reportTime + "UTC"
+                    print(metar)
                 }
             case .failure(let error):
                 print(error)
